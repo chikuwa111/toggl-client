@@ -12,6 +12,7 @@ export function PresetList() {
 
   return (
     <>
+      <h2>Presets</h2>
       {error != null && <p>Failed to update time entry. {error.message}</p>}
       {timeEntryPresets.map((timeEntry) => {
         const start = () => {

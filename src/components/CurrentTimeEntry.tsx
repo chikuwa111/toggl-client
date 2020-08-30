@@ -55,13 +55,23 @@ export function CurrentTimeEntry() {
 
   if (currentTimeEntryError != null) {
     return (
-      <p>{`Failed to get current time entry. (${currentTimeEntryError.message})`}</p>
+      <p>Failed to get current time entry. ({currentTimeEntryError.message})</p>
     );
+  }
+
+  if (currentTimeEntry == null) {
+    return <p>No current time entry.</p>;
   }
 
   return (
     <>
-      <p>{JSON.stringify(currentTimeEntry)}</p>
+      <h2>Current Time Entry</h2>
+      <div>
+        <p>{currentTimeEntry.description}</p>
+        <p>project: {currentTimeEntry.pid}</p>
+        <p>tags: [{currentTimeEntry.tags?.join(", ")}]</p>
+        <p>Start from {new Date(currentTimeEntry.start).toLocaleString()}</p>
+      </div>
       <button onClick={onClickSave}>Save preset</button>
     </>
   );
