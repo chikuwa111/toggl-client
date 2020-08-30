@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useState, FormEvent, useCallback } from "react";
 import { getCurrentTimeEntry } from "@/lib/toggl-api";
 import { usePromise } from "@/lib/usePromise";
-import { updateAPIToken } from "@/store/action";
+import { updateAPIToken, clearState } from "@/store/action";
 import { useStoreState, useDispatch } from "@/store/context";
 
 export default function Settings() {
@@ -33,6 +33,13 @@ export default function Settings() {
     [apiTokenInput]
   );
 
+  const onClickDelete = () => {
+    const ok = window.confirm("Are you sure?");
+    if (ok) {
+      dispatch(clearState());
+    }
+  };
+
   return (
     <>
       <h1>Settings</h1>
@@ -61,6 +68,10 @@ export default function Settings() {
             <p>{`Failed to save. (${setAPITokenError.message})`}</p>
           )
         )}
+      </div>
+      <div>
+        <h2>Delete data</h2>
+        <button onClick={onClickDelete}>Delete</button>
       </div>
       <p>
         <Link href="/">
