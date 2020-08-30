@@ -1,4 +1,4 @@
-import { CurrentTimeEntry } from "@/types";
+import { CurrentTimeEntry, TimeEntry } from "@/types";
 
 const TOGGL_API_BASE_URL = "https://www.toggl.com/api/v8";
 
@@ -64,3 +64,35 @@ export const makeWebSocketConnection = (
     onError(error);
   }
 };
+
+export const startNewTimeEntry = (apiToken: string, timeEntry: TimeEntry) =>
+  fetch(`${TOGGL_API_BASE_URL}/time_entries/start`, {
+    method: "POST",
+    headers: {
+      ...getAuthHeader(apiToken),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      time_entry: {
+        ...timeEntry,
+        created_with: "toggl-client.chikuwa111.com",
+      },
+    }),
+  });
+
+export const updateCurrentTimeEntry = (
+  apiToken: string,
+  timeEntry: TimeEntry
+) =>
+  getCurrentTimeEntry(apiToken)
+    .then((currentTimeEntry) => currentTimeEntry.id)
+    .then((id) =>
+      fetch(`${TOGGL_API_BASE_URL}/time_entries/${id}`, {
+        method: "POST",
+        headers: {
+          ...getAuthHeader(apiToken),
+          "Content-Type": "applicataion/json",
+        },
+        body: JSON.stringify({ time_entry: timeEntry }),
+      })
+    );

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CurrentTimeEntry } from "@/components/CurrentTimeEntry";
+import { PresetList } from "@/components/PresetList";
 import { useStoreState } from "@/store/context";
 
 export default function Index() {
@@ -17,7 +18,10 @@ export default function Index() {
           page
         </p>
       ) : (
-        <CurrentTimeEntry />
+        <>
+          <CurrentTimeEntry />
+          <PresetList />
+        </>
       )}
       <p>
         <Link href="/settings">

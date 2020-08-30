@@ -6,5 +6,6 @@ export type TimeEntry = {
 };
 
 export type CurrentTimeEntry = TimeEntry & {
+  id: number;
   start: string;
 };
