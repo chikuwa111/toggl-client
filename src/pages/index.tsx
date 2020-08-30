@@ -1,17 +1,11 @@
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { getAPIToken } from "@/lib/storage";
+import { useEffect, useState } from "react";
 import { makeWebSocketConnection, getCurrentTimeEntry } from "@/lib/toggl-api";
-import { usePromise } from "@/lib/usePromise";
+import { useStoreState } from "@/store/context";
 import { CurrentTimeEntry } from "@/types";
 
 export default function Index() {
-  const [
-    isGetAPITokenPending,
-    getAPITokenError,
-    apiToken,
-    invokeGetAPIToken,
-  ] = usePromise<string | null>();
+  const { apiToken } = useStoreState();
 
   const [
     currentTimeEntry,
@@ -23,24 +17,13 @@ export default function Index() {
   ] = useState<Error | null>(null);
 
   useEffect(() => {
-    const promise = async () => {
-      const apiToken = await getAPIToken();
-      if (apiToken == null) {
-        return null;
-      }
-      await getCurrentTimeEntry(apiToken).then(setCurrentTimeEntry);
-      return apiToken;
-    };
-    invokeGetAPIToken(promise());
-  }, []);
-
-  const hasValidToken = useMemo(
-    () => getAPITokenError == null && apiToken != null,
-    [getAPITokenError, apiToken]
-  );
+    if (apiToken !== "") {
+      getCurrentTimeEntry(apiToken).then(setCurrentTimeEntry);
+    }
+  }, [apiToken]);
 
   useEffect(() => {
-    if (!hasValidToken || apiToken == null) return;
+    if (apiToken === "") return;
 
     makeWebSocketConnection(
       apiToken,
@@ -50,27 +33,21 @@ export default function Index() {
         setCurrentTimeEntry(currentTimeEntry);
       }
     );
-  }, [hasValidToken, apiToken]);
+  }, [apiToken]);
 
   return (
     <>
       <h1>Home</h1>
-      {isGetAPITokenPending ? (
-        <p>Loading...</p>
-      ) : getAPITokenError != null ? (
-        <p>{`Failed to get API Token. (${getAPITokenError.message})`}</p>
-      ) : (
-        apiToken == null && (
-          <p>
-            Not setting API Token. Please set from{" "}
-            <Link href="/settings">
-              <a>settings</a>
-            </Link>{" "}
-            page
-          </p>
-        )
+      {apiToken === "" && (
+        <p>
+          Not setting API Token. Please set from{" "}
+          <Link href="/settings">
+            <a>settings</a>
+          </Link>{" "}
+          page
+        </p>
       )}
-      {hasValidToken &&
+      {apiToken !== "" &&
         (currentTimeEntryError != null ? (
           <p>{`Failed to get current time entry. (${currentTimeEntryError.message})`}</p>
         ) : (

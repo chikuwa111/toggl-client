@@ -1,21 +1,13 @@
 import Link from "next/link";
-import { useEffect, useState, FormEvent, useCallback } from "react";
-import { getAPIToken, setAPIToken as setAPITokenStorage } from "@/lib/storage";
+import { useState, FormEvent, useCallback } from "react";
 import { getCurrentTimeEntry } from "@/lib/toggl-api";
 import { usePromise } from "@/lib/usePromise";
+import { updateAPIToken } from "@/store/action";
+import { useStoreState, useDispatch } from "@/store/context";
 
 export default function Settings() {
-  const [apiToken, setAPIToken] = useState<string | null>(null);
-
-  const [
-    isGetAPITokenPending,
-    getAPITokenError,
-    ,
-    invokeGetAPIToken,
-  ] = usePromise<void>();
-  useEffect(() => {
-    invokeGetAPIToken(getAPIToken().then(setAPIToken));
-  }, []);
+  const { apiToken } = useStoreState();
+  const dispatch = useDispatch();
 
   const [apiTokenInput, setAPITokenInput] = useState("");
   const [
@@ -32,8 +24,7 @@ export default function Settings() {
         // Call API to validate token
         await getCurrentTimeEntry(apiTokenInput);
 
-        const apiToken = await setAPITokenStorage(apiTokenInput);
-        setAPIToken(apiToken);
+        dispatch(updateAPIToken(apiTokenInput));
         setAPITokenInput("");
       };
 
@@ -47,11 +38,7 @@ export default function Settings() {
       <h1>Settings</h1>
       <div>
         <h2>API Token</h2>
-        {isGetAPITokenPending ? (
-          <p>Loading...</p>
-        ) : getAPITokenError != null ? (
-          <p>{`Failed to get API Token. ${getAPITokenError.message}`}</p>
-        ) : apiToken == null ? (
+        {apiToken === "" ? (
           <p>No setting.</p>
         ) : (
           <p>{`${apiToken.slice(0, 3)}*******`}</p>
