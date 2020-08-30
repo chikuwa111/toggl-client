@@ -53,6 +53,11 @@ export default function Index() {
         ) : (
           <p>{JSON.stringify(currentTimeEntry)}</p>
         ))}
+      <p>
+        <Link href="/settings">
+          <a>Settings</a>
+        </Link>
+      </p>
     </>
   );
 }

@@ -75,7 +75,7 @@ export default function Settings() {
       </div>
       <p>
         <Link href="/">
-          <a>Back to Home</a>
+          <a>Home</a>
         </Link>
       </p>
     </>
